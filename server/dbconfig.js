@@ -1,20 +1,11 @@
-const mysql = require('mysql2/promise');
+const mysql = require('mysql2');
 
-// MySQL connection pool (promise-based)
+// Create a connection pool with promise API
 const pool = mysql.createPool({
     host: 'localhost',
     user: 'root',
     password: '',
     database: 'EmployeeClaims'
-});
+}).promise(); // Ensure `.promise()` is called here
 
-async function getClaims() {
-    try {
-        const [rows, fields] = await pool.query('SELECT * FROM Claims');
-        console.log(rows);
-    } catch (error) {
-        console.error('Error fetching claims:', error);
-    }
-}
-
-getClaims(); // Calling the function to fetch the claims
+module.exports = pool;

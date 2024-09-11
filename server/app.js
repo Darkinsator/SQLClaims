@@ -1,31 +1,26 @@
 const express = require('express');
+const cors = require('cors');
 const bodyParser = require('body-parser');
-const pool = require('./dbconfig');  // MySQL connection
+const pool = require('./dbconfig');  // Ensure this uses the promise-based pool
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware to parse incoming JSON requests
+app.use(cors());
 app.use(bodyParser.json());
 
-// POST endpoint to handle employee claims
 app.post('/claims', async (req, res) => {
     const { employeeID, claimDate, injuryType, injuryDescription, claimAmount } = req.body;
 
-    // Validate the request body
     if (!employeeID || !claimDate || !injuryType || !injuryDescription || !claimAmount) {
         return res.status(400).json({ success: false, message: 'All fields are required.' });
     }
 
-    // SQL query to insert the claim into the database
     const query = `INSERT INTO Claims (EmployeeID, ClaimDate, InjuryType, InjuryDescription, ClaimAmount, StatusID) 
                    VALUES (?, ?, ?, ?, ?, 1)`;
 
     try {
-        // Execute the query using the MySQL connection
-        const [results] = await pool.query(query, [employeeID, claimDate, injuryType, injuryDescription, claimAmount]);
-        
-        // Respond with success if the claim was inserted successfully
+        await pool.query(query, [employeeID, claimDate, injuryType, injuryDescription, claimAmount]);
         res.json({ success: true, message: 'Claim submitted successfully.' });
     } catch (error) {
         console.error('Error inserting claim:', error);
@@ -33,7 +28,6 @@ app.post('/claims', async (req, res) => {
     }
 });
 
-// Function to create the table if it doesn't exist
 async function createTable() {
     const createTableQuery = `
     CREATE TABLE IF NOT EXISTS Claims (
@@ -55,10 +49,8 @@ async function createTable() {
     }
 }
 
-// Call the createTable function to ensure the table exists
 createTable();
 
-// Start the Express server
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
