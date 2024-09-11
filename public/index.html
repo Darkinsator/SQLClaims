@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Claims</title>
+    <script defer src="script.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Submit a Claim</h1>
+    <form id="claimForm">
+        <label for="employeeID">Employee ID:</label>
+        <input type="number" id="employeeID" name="employeeID" required>
+        <br>
+        <label for="claimDate">Claim Date:</label>
+        <input type="date" id="claimDate" name="claimDate" required>
+        <br>
+        <label for="injuryType">Injury Type:</label>
+        <input type="text" id="injuryType" name="injuryType" required>
+        <br>
+        <label for="injuryDescription">Injury Description:</label>
+        <textarea id="injuryDescription" name="injuryDescription" required></textarea>
+        <br>
+        <label for="claimAmount">Claim Amount:</label>
+        <input type="number" id="claimAmount" name="claimAmount" step="0.01" required>
+        <br>
+        <button type="submit">Submit Claim</button>
+    </form>
+    <p id="responseMessage"></p>
+</body>
+</html>

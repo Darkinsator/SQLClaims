@@ -1,15 +1,39 @@
+// server/app.js
 const express = require('express');
-const cors = require('cors');
 const bodyParser = require('body-parser');
-const pool = require('./dbconfig');  // Ensure this uses the promise-based pool
+const path = require('path');
+const pool = require('./dbconfig');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors());
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, '../public')));
+
+// Middleware to parse incoming JSON requests
 app.use(bodyParser.json());
 
-app.post('/claims', async (req, res) => {
+// Create table if it doesn't exist
+const createTableQuery = `
+CREATE TABLE IF NOT EXISTS Claims (
+    ClaimID INT AUTO_INCREMENT PRIMARY KEY,
+    EmployeeID INT NOT NULL,
+    ClaimDate DATE NOT NULL,
+    InjuryType VARCHAR(255) NOT NULL,
+    InjuryDescription TEXT NOT NULL,
+    ClaimAmount DECIMAL(10, 2) NOT NULL,
+    StatusID INT NOT NULL DEFAULT 1
+);
+`;
+
+pool.query(createTableQuery).then(() => {
+    console.log('Claims table created or already exists');
+}).catch(error => {
+    console.error('Error creating table:', error);
+});
+
+// POST endpoint to handle employee claims
+app.post('/api/claims', async (req, res) => {
     const { employeeID, claimDate, injuryType, injuryDescription, claimAmount } = req.body;
 
     if (!employeeID || !claimDate || !injuryType || !injuryDescription || !claimAmount) {
@@ -28,29 +52,7 @@ app.post('/claims', async (req, res) => {
     }
 });
 
-async function createTable() {
-    const createTableQuery = `
-    CREATE TABLE IF NOT EXISTS Claims (
-        ClaimID INT AUTO_INCREMENT PRIMARY KEY,
-        EmployeeID INT NOT NULL,
-        ClaimDate DATE NOT NULL,
-        InjuryType VARCHAR(255) NOT NULL,
-        InjuryDescription TEXT NOT NULL,
-        ClaimAmount DECIMAL(10, 2) NOT NULL,
-        StatusID INT NOT NULL DEFAULT 1
-    );
-    `;
-
-    try {
-        await pool.query(createTableQuery);
-        console.log("Claims table created or already exists");
-    } catch (error) {
-        console.error('Error creating table:', error);
-    }
-}
-
-createTable();
-
+// Start the Express server
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
