@@ -19,7 +19,7 @@ document.getElementById('claimForm').addEventListener('submit', function(event) 
     };
 
     // Send the data to the backend using fetch
-    fetch('https://your-backend-api-url/claims', {
+    fetch('http://localhost:3000/claims', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
