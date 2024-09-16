@@ -1,13 +1,10 @@
-// server/dbconfig.js
 const mysql = require('mysql2');
-
-// Create a connection pool
 const pool = mysql.createPool({
     host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'EmployeeClaims'
+    user: 'root',           // Your MySQL username
+    password: '',           // Your MySQL password
+    database: 'SQLClaims',
+    waitForConnections: true,
+    connectionLimit: 10
 });
-
-// Export the pool
-module.exports = pool.promise(); // Use promise-based API
+module.exports = pool.promise();
